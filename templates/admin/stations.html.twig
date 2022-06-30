@@ -1,8 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ChargeIT Homepage{% endblock %}
+{% block title %}ADMIN: ChargeIT Stations{% endblock %}
 
 {% block body %}
+    <script>
+        function deleteStation(uuid) {
+            const choice = confirm("Are you sure you want to delete this station?");
+            if(choice)
+                location.href = "/admin/station/" + uuid + "/delete";
+        }
+    </script>
     <style>
         .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
@@ -15,26 +22,29 @@
 
     <div class="example-wrapper">
         <div style="text-align: center">
-            <a href="/logout">Logout user '{{ name }}'</a>
-            <h1>Charge IT Homepage</h1>
-            <h3>Hello there, {{ name }}!</h3>
+            <h1>Charge IT Station Database</h1>
+            <h3>Administration page</h3>
         </div>
-        Here is a list of available pages on this website:
+        Stations list:
         <table style="width: 100%">
             <col style="width: 50%">
-            <col style="width: 50%">
+            <col style="width: 35%">
+            <col style="width: 15%">
             <tr>
-                <th>Name</th>
-                <th>Link</th>
+                <th>Station</th>
+                <th>Address</th>
+                <th>Options</th>
             </tr>
-            <tr>
-                <td>Admin login</td>
-                <td><a href="{{ path('admin_login') }}">{{ path('admin_login') }}</a></td>
-            </tr>
-            <tr>
-                <td>Station editor (admin only)</td>
-                <td><a href="{{ path('admin_stations') }}">{{ path('admin_stations') }}</a></td>
-            </tr>
+            {% for obj in jsonData %}
+                <tr>
+                    <td>{{ obj.name }}</td>
+                    <td>{{ obj.address }}</td>
+                    <td>
+                        <a href="{{ path('admin_station_edit', {'id': obj.uuid}) }}">Edit</a><br>
+                        <a href="javascript:deleteStation('{{ obj.uuid }}')">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
         {#    <ul>#}
         {#        <li>Your controller at <code><a href="{{ 'C:/Users/daian/PhpstormProjects/ChargeIT/ChargeIT/src/Controller/MainPageController.php'|file_link(0) }}">src/Controller/MainPageController.php</a></code></li>#}

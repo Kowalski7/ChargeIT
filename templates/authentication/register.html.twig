@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ChargeIT : Register{% endblock %}
+
+{% block body %}
+    <div class="h-100">
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/css/fontawsom-all.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
+        <div class="container-fluid full-bg h-100">
+            <div class="container h-100">
+                <div class="row no-margin h-100">
+                    <div class="bg-layer d-flex col-md-4">
+                        {{ form_start(registrationForm) }}
+                            <div class="login-box row">
+                                <h3>User Registration</h3>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                                    </div>
+                                    {{ form_widget(registrationForm.name, {'attr': {'class': 'form-control', 'placeholder': 'Full Name', 'aria-label': 'Full Name', 'aria-describedby': 'basic-addon1'}}) }}
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
+                                    </div>
+                                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Email Address', 'aria-label': 'Email Address', 'aria-describedby': 'basic-addon1'}}) }}
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+                                    </div>
+                                    {{ form_widget(registrationForm.phone, {'attr': {'class': 'form-control', 'placeholder': 'Phone Number (optional)', 'aria-label': 'Phone Number', 'aria-describedby': 'basic-addon1'}}) }}
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
+                                    </div>
+                                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Password', 'aria-label': 'Password', 'aria-describedby': 'basic-addon1'}}) }}
+                                </div>
+                                <div style="color: red; text-align: center; width: 100%">
+                                    {{ form_errors(registrationForm.name) }}
+                                    {{ form_errors(registrationForm.email) }}
+                                    {{ form_errors(registrationForm.phone) }}
+                                    {{ form_errors(registrationForm.plainPassword) }}
+                                </div>
+                                <button type="submit" class="btn btn-success">Register</button>
+
+                                <p class="no-c">Already have Account? <a href="{{ path('app_login') }}">Sign In</a></p>
+                            </div>
+                        {{ form_end(registrationForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

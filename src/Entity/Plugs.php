@@ -47,7 +47,7 @@ class Plugs
      *
      * @ORM\ManyToOne(targetEntity="Stations")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="station", referencedColumnName="plus_code")
+     *   @ORM\JoinColumn(name="station", referencedColumnName="uuid")
      * })
      */
     private $station;
@@ -107,7 +107,7 @@ class Plugs
 
     public function __toString(): string
     {
-        return 'id: ' . $this->plugId . '; station: ' . $this->station->getPlusCode() . '; connector: ' . $this->connectorType . '; max_output: ' . $this->maxOutput;
+        return 'id: ' . $this->plugId . '; station: ' . $this->station->getUuid() . '; connector: ' . $this->connectorType . '; max_output: ' . $this->maxOutput;
     }
 
 

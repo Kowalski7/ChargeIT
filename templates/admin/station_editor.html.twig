@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ADMIN: ChargeIT Station Editor{% endblock %}
+
+{% block body %}
+    <script>
+        function deleteStation() {
+            const choice = confirm("Are you sure you want to delete this station?");
+            if(choice)
+                location.href = "{{ path('admin_station_delete', {'id': jsonData.uuid}) }}";
+        }
+    </script>
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 1200px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        table, th, td {
+            font-size: 1em;
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        .col {
+            border: transparent;
+            font-size: 1em;
+            text-align: left;
+            vertical-align: top;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <div style="text-align: center">
+            <h1>{{ jsonData.name }}</h1>
+            <h3>{{ jsonData.address }}</h3>
+        </div>
+        <table class="col" style="width: 100%;">
+            <col style="width: 60%">
+            <tr class="col">
+                <td class="col">
+                    Modify details:
+                    <br><br>
+                    {{ form_start(editForm) }}
+                        <label for="nameInp">Name: </label>
+                        {{ form_widget(editForm.name, {'attr': {'id': 'nameInp', 'size': 36}}) }}
+                        <br>
+                        <label for="nameInp">Plus Code: </label>
+                        {{ form_widget(editForm.plusCode, {'attr': {'id': 'plusCodeInp', 'size': 30}}) }}
+                        <br><br>
+                    <input type="submit" value="Update details" style="font-size: 1.08em; width: 8em; height: 2em" />
+                    <input type="button" value="Delete station" onclick="deleteStation()" style="font-size: 1.08em; width: 8em; height: 2em" />
+                    <br><br>
+                    <input type="button" value="Return to station list" onclick="location.href='{{ path('admin_stations') }}'" style="font-size: 1.08em; width: 16.25em; height: 2em" />
+                    {{ form_end(editForm) }}
+                </td>
+                <td class="col">
+                    Plugs list:
+                    <table style="vertical-align: center; horiz-align: center;">
+                        <col style="width: 25%">
+                        <col style="width: 30%">
+                        <col style="width: 20%">
+                        <col style="width: 15%">
+                        <tr>
+                            <th>Status</th>
+                            <th>Connector</th>
+                            <th>Max. Output (kW)</th>
+                            <th>Options</th>
+                        </tr>
+                        {% for obj in jsonData.plugs %}
+                            <tr>
+                                <td>{{ obj.status ? "Online" : "Offline" }}</td>
+                                <td>{{ obj.connector }}</td>
+                                <td>{{ obj.output }}</td>
+                                <td>
+                                    <a href="{# {{ path('admin_plug_edit', {'id': obj.id}) }} #} javascript:alert('Not implemented!');">Edit</a><br>
+                                    <a href="{# {{ path('admin_plug_delete', {'id': obj.id}) }} #} javascript:alert('Not implemented!');">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        </table>
+        {#    <ul>#}
+        {#        <li>Your controller at <code><a href="{{ 'C:/Users/daian/PhpstormProjects/ChargeIT/ChargeIT/src/Controller/MainPageController.php'|file_link(0) }}">src/Controller/MainPageController.php</a></code></li>#}
+        {#        <li>Your template at <code><a href="{{ 'C:/Users/daian/PhpstormProjects/ChargeIT/ChargeIT/templates/main_page/login.html.twig'|file_link(0) }}">templates/main_page/login.html.twig</a></code></li>#}
+        {#    </ul>#}
+    </div>
+{% endblock %}

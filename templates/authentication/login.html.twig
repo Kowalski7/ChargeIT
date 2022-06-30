@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ChargeIT : Login{% endblock %}
+
+{% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/fontawsom-all.min.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
+
+    <div class="h-100">
+        <div class="container-fluid full-bg h-100">
+            <div class="container h-100">
+                <div class="row no-margin h-100">
+                    <div class="bg-layer d-flex col-md-4">
+                        <form action="{{ path('app_login') }}" method="post">
+                            <div class="login-box row">
+                                <h3>User Login</h3>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="username" name="_username" value="{{ last_username }}" placeholder="Email" aria-label="Email" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-key"></i></span>
+                                    </div>
+                                    <input type="password" class="form-control" id="password" name="_password" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+                                </div>
+                                {% if error %}
+                                    <div style="color: red; text-align: center; width: 100%">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                                {% endif %}
+                                <button type="submit" class="btn btn-success">Login</button>
+                                <p class="no-c">Not a member yet? <a href="{{ path('app_register') }}">Create your Account</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -24,9 +24,9 @@ class UserCar
     /**
      * @var \Users
      *
-     * @ORM\ManyToOne(targetEntity="Users")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="email")
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
      * })
      */
     private $user;
