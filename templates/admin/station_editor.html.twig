@@ -4,10 +4,29 @@
 
 {% block body %}
     <script>
+        window.onsubmit = function() {
+            hideControls();
+        }
+
+        function hideControls() {
+            document.getElementById('controls').style.display = "none";
+            document.getElementById('loaderMessage').style.display = "";
+        }
+
         function deleteStation() {
             const choice = confirm("Are you sure you want to delete this station?");
-            if(choice)
+            if(choice) {
+                hideControls();
                 location.href = "{{ path('admin_station_delete', {'id': jsonData.uuid}) }}";
+            }
+        }
+        function deletePlug(id) {
+            const choice = confirm("Are you sure you want to delete this plug?");
+            if(choice)
+                location.href = "/admin/plug/" + id + "/delete";
+        }
+        function newPopup(url, title) {
+            window.open(url, title, 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=330,height=320')
         }
     </script>
     <style>
@@ -33,31 +52,47 @@
             <h3>{{ jsonData.address }}</h3>
         </div>
         <table class="col" style="width: 100%;">
-            <col style="width: 60%">
+            <colgroup>
+                <col style="width: 30%">
+                <col style="width: 30%">
+                <col style="width: 40%">
+            </colgroup>
             <tr class="col">
                 <td class="col">
                     Modify details:
                     <br><br>
                     {{ form_start(editForm) }}
-                        <label for="nameInp">Name: </label>
-                        {{ form_widget(editForm.name, {'attr': {'id': 'nameInp', 'size': 36}}) }}
+                        <label for="nameInp" style="display: inline-block; width: 30%">Name: </label>
+                        {{ form_widget(editForm.name, {'attr': {'id': 'nameInp', 'style': 'width: 66%'}}) }}
                         <br>
-                        <label for="nameInp">Plus Code: </label>
-                        {{ form_widget(editForm.plusCode, {'attr': {'id': 'plusCodeInp', 'size': 30}}) }}
+                        <label for="nameInp" style="display: inline-block; width: 30%">Plus Code: </label>
+                        {{ form_widget(editForm.plusCode, {'attr': {'id': 'plusCodeInp', 'style': 'width: 66%'}}) }}
                         <br><br>
-                    <input type="submit" value="Update details" style="font-size: 1.08em; width: 8em; height: 2em" />
-                    <input type="button" value="Delete station" onclick="deleteStation()" style="font-size: 1.08em; width: 8em; height: 2em" />
-                    <br><br>
-                    <input type="button" value="Return to station list" onclick="location.href='{{ path('admin_stations') }}'" style="font-size: 1.08em; width: 16.25em; height: 2em" />
+                        <div id="controls">
+                            <input type="submit" value="Update details" style="font-size: 1.08em; width: 45%; height: 2em; margin-right: 4%" />
+                            <input type="button" value="Delete station" onclick="deleteStation()" style="font-size: 1.08em; width: 45%; height: 2em; margin-left: 4%" />
+                            <br>
+                            <input type="button" value="Add new plug" onclick="newPopup('{{ path('admin_plug_create') }}?station={{ jsonData.uuid }}', 'create_plug')" style="font-size: 1.08em; width: 99%; height: 2em; margin-top: 0.5rem" />
+                            <br><br>
+                            <input type="button" value="Return to station list" onclick="location.href='{{ path('admin_stations') }}'" style="font-size: 1.08em; width: 99%; height: 2em" />
+                        </div>
+                        <div id="loaderMessage" style="vertical-align: center; text-align: center; display: none;">
+                            <h3>Please wait...</h3>
+                        </div>
                     {{ form_end(editForm) }}
+                </td>
+                <td class="col">
+                    <!-- Empty column for spacing -->
                 </td>
                 <td class="col">
                     Plugs list:
                     <table style="vertical-align: center; horiz-align: center;">
-                        <col style="width: 25%">
-                        <col style="width: 30%">
-                        <col style="width: 20%">
-                        <col style="width: 15%">
+                        <colgroup>
+                            <col style="width: 25%">
+                            <col style="width: 30%">
+                            <col style="width: 20%">
+                            <col style="width: 15%">
+                        </colgroup>
                         <tr>
                             <th>Status</th>
                             <th>Connector</th>
@@ -70,8 +105,8 @@
                                 <td>{{ obj.connector }}</td>
                                 <td>{{ obj.output }}</td>
                                 <td>
-                                    <a href="{# {{ path('admin_plug_edit', {'id': obj.id}) }} #} javascript:alert('Not implemented!');">Edit</a><br>
-                                    <a href="{# {{ path('admin_plug_delete', {'id': obj.id}) }} #} javascript:alert('Not implemented!');">Delete</a>
+                                    <a href="javascript:newPopup('{{ path('admin_plug_edit', {'id': obj.id}) }}', 'edit_{{ obj.id }}')">Edit</a><br>
+                                    <a href="javascript:deletePlug('{{ obj.id }}')">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -79,9 +114,5 @@
                 </td>
             </tr>
         </table>
-        {#    <ul>#}
-        {#        <li>Your controller at <code><a href="{{ 'C:/Users/daian/PhpstormProjects/ChargeIT/ChargeIT/src/Controller/MainPageController.php'|file_link(0) }}">src/Controller/MainPageController.php</a></code></li>#}
-        {#        <li>Your template at <code><a href="{{ 'C:/Users/daian/PhpstormProjects/ChargeIT/ChargeIT/templates/main_page/login.html.twig'|file_link(0) }}">templates/main_page/login.html.twig</a></code></li>#}
-        {#    </ul>#}
     </div>
 {% endblock %}

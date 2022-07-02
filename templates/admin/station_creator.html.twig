@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ADMIN: ChargeIT Station Creator{% endblock %}
+
+{% block body %}
+    <script>
+        {% if close_window|default %}
+        document.body.innerText = "Station created! You can now close this window.";
+        window.close();
+        {% endif %}
+
+        window.onsubmit = function() {
+            window.onunload = function() {
+                window.opener.location.reload();
+            }
+            hideControls();
+        };
+
+        function hideControls() {
+            document.getElementById('controls').style.display = "none";
+            document.getElementById('loaderMessage').style.display = "";
+        }
+    </script>
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 1200px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        body {
+            overflow: hidden;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <div style="text-align: center">
+            <h2>Station Creator</h2>
+        </div>
+
+        {{ form_start(createForm) }}
+        <label for="nameInp">Name: </label><br>
+        {{ form_widget(createForm.name, {'attr': {'id': 'nameInp', 'size': 44, 'style': 'margin-bottom: 1rem'}}) }}
+        <label for="plusCodeInp">Address (Plus Code): </label><br>
+        {{ form_widget(createForm.plusCode, {'attr': {'id': 'plusCodeInp', 'size': 44}}) }}
+        <br><br>
+        <div id="controls">
+            <input id="submitBtn" type="submit" value="Create station" style="font-size: 1em; width: 16.25em; height: 2em; margin-bottom: 0.5rem" />
+            <br>
+            <input type="button" value="Cancel" onclick="window.close()" style="font-size: 1em; width: 16.25em; height: 2em" />
+        </div>
+        <div id="loaderMessage" style="vertical-align: center; text-align: center; display: none;">
+            <h3>Please wait...</h3>
+        </div>
+        {{ form_end(createForm) }}
+    </div>
+{% endblock %}

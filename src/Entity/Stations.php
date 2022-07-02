@@ -13,8 +13,10 @@ use Doctrine\ORM\Mapping as ORM;
 class Stations
 {
     /**
+     * @var string
+     *
      * @ORM\Id
-     * @ORM\Column(type="guid")
+     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
      */
     private $uuid;
 
@@ -22,7 +24,6 @@ class Stations
      * @var string
      *
      * @ORM\Column(name="plus_code", type="string", length=30, nullable=false)
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $plusCode;
 
@@ -65,6 +66,11 @@ class Stations
         $this->uuid = $uuid;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return '{uuid: ' . $this->uuid . ', name: ' . $this->name . ', plusCode: ' . $this->plusCode . '}';
     }
 
 

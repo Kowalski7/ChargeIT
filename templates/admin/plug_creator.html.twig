@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ADMIN: ChargeIT Plug Creator{% endblock %}
+
+{% block body %}
+    <script>
+        {% if close_window|default %}
+        document.body.innerText = "Plug created! You can now close this window.";
+        window.close();
+        {% endif %}
+
+        window.onsubmit = function() {
+            window.onunload = function() {
+                window.opener.location.reload();
+            }
+            hideControls();
+        };
+
+        function hideControls() {
+            document.getElementById('controls').style.display = "none";
+            document.getElementById('loaderMessage').style.display = "";
+        }
+    </script>
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 1200px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        body {
+            overflow: hidden;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <div style="text-align: center">
+            <h2>Plug Creator</h2>
+        </div>
+
+        {{ form_start(createForm) }}
+        <label for="connectorInp">Connector type: </label>
+        {{ form_widget(createForm.connector_type, {'attr': {'id': 'connectorInp', 'size': 20}}) }}
+        <br>
+        <label for="maxInp">Max. Output (kW): </label>
+        {{ form_widget(createForm.max_output, {'type': 'number', 'attr': {'id': 'maxInp', 'size': 17, 'step': '0.1'}}) }}
+        <br>
+        <label for="statusInp">Online: </label>
+        {{ form_widget(createForm.status, {'attr': {'id': 'statusInp'}}) }}
+        <br><br>
+        <div id="controls">
+            <input id="submitBtn" type="submit" value="Create plug" style="font-size: 1em; width: 16.25em; height: 2em; margin-bottom: 0.5rem" />
+            <br>
+            <input type="button" value="Cancel" onclick="window.close()" style="font-size: 1em; width: 16.25em; height: 2em" />
+        </div>
+        <div id="loaderMessage" style="vertical-align: center; text-align: center; display: none;">
+            <h3>Please wait...</h3>
+        </div>
+        {{ form_end(createForm) }}
+    </div>
+{% endblock %}

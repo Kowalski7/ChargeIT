@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 class AdminStationsManager extends AbstractController
 {
@@ -24,15 +25,39 @@ class AdminStationsManager extends AbstractController
         $jsonData = [];
         for($i = 0; $i<sizeof($stations); $i++) {
             $jsonObj = new stdClass();
-            $jsonObj -> uuid = $stations[$i]->getUuid();
-            $jsonObj -> name = $stations[$i]->getName();
-            $jsonObj -> address = $stations[$i]->getPlusCode();
+            $jsonObj->uuid = $stations[$i]->getUuid();
+            $jsonObj->name = $stations[$i]->getName();
+            $jsonObj->address = $stations[$i]->getPlusCode();
             $jsonData[] = $jsonObj;
         }
 
         // render webpage and send list of table rows to twig
         return $this->render('admin/stations.html.twig', [
             'jsonData' => $jsonData
+        ]);
+    }
+
+    #[Route('/admin/station', name: 'admin_station_create')]
+    public function station_create(Request $request, ManagerRegistry $doctrine) : Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+
+        $station = new Stations();
+        $close_window = false;
+        $form = $this->createForm(StationFormType::class, $station);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $station->setUuid(Uuid::v4()->toRfc4122());
+            $station->setName($form->get('name')->getData());
+            $station->setPlusCode($form->get('plusCode')->getData());
+            $doctrine->getManager()->persist($station);
+            $doctrine->getManager()->flush();
+            $close_window = true;
+        }
+
+        // render webpage and send list of table rows to twig
+        return $this->render('admin/station_creator.html.twig', [
+            'createForm'  => $form->createView(),
+            'close_window' => $close_window
         ]);
     }
 
