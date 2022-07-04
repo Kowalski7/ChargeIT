@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminPlugsManager extends AbstractController
+class AdminPlugsController extends AbstractController
 {
     #[Route('/admin/plug', name: 'admin_plug_create')]
     public function plug_create(Request $request, ManagerRegistry $doctrine) : Response

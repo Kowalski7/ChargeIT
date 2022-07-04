@@ -55,6 +55,21 @@ class Bookings
      */
     private $plug;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $end_time;
+
+    /**
+     * @var \User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
+     * })
+     */
+    private $user;
+
     public function getBookingId(): ?int
     {
         return $this->bookingId;
@@ -108,5 +123,27 @@ class Bookings
         return $this;
     }
 
+    public function getEndTime(): ?\DateTimeInterface
+    {
+        return $this->end_time;
+    }
 
+    public function setEndTime(\DateTimeInterface $end_time): self
+    {
+        $this->end_time = $end_time;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
 }

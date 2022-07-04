@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add a car{% endblock %}
+
+{% block body %}
+    <script>
+        {% if already_added|default %}
+        alert("This car has already been added to your account!");
+        {% endif %}
+        {% if close_window|default %}
+        document.body.innerText = "Car added! You can now close this window.";
+        window.close();
+        {% endif %}
+
+        window.onsubmit = function() {
+            window.onunload = function() {
+                window.opener.location.reload();
+            }
+            hideControls();
+        };
+
+        function hideControls() {
+            document.getElementById('controls').style.display = "none";
+            document.getElementById('loaderMessage').style.display = "";
+        }
+    </script>
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 1200px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        #controls, #loaderMessage {
+            margin-top: 2rem;
+        }
+
+        body {
+            overflow: hidden;
+        }
+        ul, li {
+            padding: 0;
+            list-style: none;
+            color: red;
+            text-align: center;
+            margin: 5px 0 0;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <div style="text-align: center">
+            <h2>Add a car</h2>
+        </div>
+
+        {{ form_start(createForm) }}
+        <label for="nameInp">License plate: </label>
+        {{ form_widget(createForm.license_plate, {'attr': {'id': 'nameInp', 'size': 34}}) }}
+        <p style="margin-bottom: 1rem; margin-top: 0.25rem; text-align: center">Ex: <b>AR 27 XYZ</b> or <b>B 007 ABC</b> or <b>TM 123456</b></p>
+        <label for="plugInp">Plug type: </label>
+        {{ form_widget(createForm.plug_type, {'attr': {'id': 'plugInp', 'size': 49}}) }}
+        {{ form_errors(createForm.license_plate) }}
+        <div id="controls">
+            <input id="submitBtn" type="submit" value="Add car" style="font-size: 1em; width: 11em; height: 2em; margin-bottom: 0.5rem" />
+            <input type="button" value="Cancel" onclick="window.close()" style="font-size: 1em; width: 11em; height: 2em; float: right" />
+        </div>
+        <div id="loaderMessage" style="vertical-align: center; text-align: center; display: none;">
+            <h3>Please wait...</h3>
+        </div>
+        {{ form_end(createForm) }}
+    </div>
+{% endblock %}

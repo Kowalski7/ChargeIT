@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
-class AdminStationsManager extends AbstractController
+class AdminStationsController extends AbstractController
 {
     #[Route('/admin/stations', name: 'admin_stations')]
     public function stations(ManagerRegistry $doctrine) : Response {

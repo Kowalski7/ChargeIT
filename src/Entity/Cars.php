@@ -17,7 +17,6 @@ class Cars
      *
      * @ORM\Column(name="license_plate", type="string", length=10, nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $licensePlate;
 
@@ -45,5 +44,15 @@ class Cars
         return $this;
     }
 
+    public function setLicensePlate(string $licensePlate): self
+    {
+        $this->licensePlate = $licensePlate;
 
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->licensePlate;
+    }
 }

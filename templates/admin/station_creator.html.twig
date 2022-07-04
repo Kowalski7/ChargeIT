@@ -36,14 +36,14 @@
 
         {{ form_start(createForm) }}
         <label for="nameInp">Name: </label><br>
-        {{ form_widget(createForm.name, {'attr': {'id': 'nameInp', 'size': 44, 'style': 'margin-bottom: 1rem'}}) }}
+        {{ form_widget(createForm.name, {'attr': {'id': 'nameInp', 'style': 'margin-bottom: 1rem; width: 100%'}}) }}
         <label for="plusCodeInp">Address (Plus Code): </label><br>
-        {{ form_widget(createForm.plusCode, {'attr': {'id': 'plusCodeInp', 'size': 44}}) }}
+        {{ form_widget(createForm.plusCode, {'attr': {'id': 'plusCodeInp', 'style': 'width: 100%'}}) }}
         <br><br>
         <div id="controls">
-            <input id="submitBtn" type="submit" value="Create station" style="font-size: 1em; width: 16.25em; height: 2em; margin-bottom: 0.5rem" />
+            <input id="submitBtn" type="submit" value="Create station" style="font-size: 1em; width: 100%; height: 2em; margin-bottom: 0.5rem" />
             <br>
-            <input type="button" value="Cancel" onclick="window.close()" style="font-size: 1em; width: 16.25em; height: 2em" />
+            <input type="button" value="Cancel" onclick="window.close()" style="font-size: 1em; width: 100%; height: 2em" />
         </div>
         <div id="loaderMessage" style="vertical-align: center; text-align: center; display: none;">
             <h3>Please wait...</h3>
