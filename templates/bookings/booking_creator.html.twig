@@ -3,14 +3,54 @@
 {% block title %}ChargeIT Booking Creator{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <script>
+        {% if close_window|default %}
+        document.body.innerText = "Booking created! You can now close this window.";
+        window.close();
+        {% endif %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        window.onsubmit = function() {
+            window.onunload = function() {
+                window.opener.location.reload();
+            }
+            hideControls();
+        };
 
-    {{ form(createForm) }}
-</div>
+        function hideControls() {
+            document.getElementById('controls').style.display = "none";
+            document.getElementById('loaderMessage').style.display = "";
+        }
+    </script>
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        body {
+            overflow: hidden;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <h1>Booking creator</h1>
+
+        {{ form_start(createForm) }}
+            <div style="display: flex; margin-bottom: 0.5rem">
+                <label for="carInp" style="font-size: 1.1em; height: 100%; width: 50%">Car: </label>
+                {{ form_widget(createForm.car, {'attr': {'id': 'carInp', 'style': 'width: 50%'}}) }}
+            </div>
+            <div style="display: flex; margin-bottom: 0.5rem">
+                <label for="timeInp" style="font-size: 1.1em; height: 100%; width: 50%">Date & Time: </label>
+                {{ form_widget(createForm.start_time, {'attr': {'id': 'timeInp', 'style': 'width: 50%'}}) }}
+            </div>
+            <div style="display: flex; margin-bottom: 0.5rem">
+                <label for="durationInp" style="font-size: 1.1em; height: 100%; width: 50%">Duration (min): </label>
+                {{ form_widget(createForm.duration, {'attr': {'id': 'durationInp', 'style': 'width: 50%'}}) }}
+            </div>
+            <div style="display: flex; margin-bottom: 0.5rem">
+                <label for="plugInp" style="font-size: 1.1em; height: 100%; width: 50%">Plug ID: </label>
+                {{ form_widget(createForm.plug, {'attr': {'id': 'plugInp', 'style': 'width: 50%'}}) }}
+            </div>
+            <input style="width: 100%; margin-bottom: 0.5rem" type="submit" value="Create" />
+            <input style="width: 100%" onclick="window.close()" type="button" value="Cancel" />
+        {{ form_end(createForm) }}
+    </div>
 {% endblock %}

@@ -5,24 +5,19 @@
 {% block body %}
     {% include 'navbar.html.twig' %}
     <script>
-        function deleteBooking(plate) {
+        function deleteBooking(id) {
             const choice = confirm("Are you sure you want to cancel this booking?");
             if(choice)
-                location.href = "/booking/" + plate + "/delete";
+                location.href = "/booking/" + id + "/delete";
         }
         function newPopup(url, title) {
-            window.open(url, title, 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=450,height=320')
+            window.open(url, title, 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=450,height=360')
         }
     </script>
 
     <style>
         .example-wrapper { margin: 1em auto; max-width: 75%; width: 95%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-        table, th, td {
-            font-size: 1em;
-            border: 1px solid black;
-            text-align: center;
-        }
     </style>
 
     <div class="example-wrapper">
@@ -31,33 +26,40 @@
             <h3>Here's a list with all of your bookings:</h3>
         </div>
         <div>
-            <input disabled="disabled" type="button" value="Create a booking" onclick="newPopup('{{ path('app_booking_create') }}', 'create_booking')" style="cursor: not-allowed ;font-size: 1.08em; width: 100%; height: 2em; margin-bottom: 0.5rem" />
-            <table style="width: 100%">
+            <input class="btn btn-outline-success mt-5 mb-3" type="button" value="Create a booking" onclick="newPopup('{{ path('app_booking_create') }}', 'create_booking')" style="font-size: 1.08em; width: 100%;" />
+            <table class="table table-striped table-hover" style="width: 100%">
                 <colgroup>
                     <col style="width: 15%">
-                    <col style="width: 7%">
+                    <col style="width: 12%">
                     <col style="width: 10%">
-                    <col style="width: 10%">
-                    <col style="width: 5%">
                     <col style="width: 15%">
+                    <col style="width: 5%">
+                    <col style="width: 5%">
                 </colgroup>
-                <tr>
-                    <th>Station</th>
-                    <th>Plug</th>
-                    <th>Car</th>
-                    <th>Date & Time</th>
-                    <th>Duration</th>
-                    <th>Options</th>
-                </tr>
-{#                {% for obj in jsonData %}#}
-{#                    <tr>#}
-{#                        <td>{{ obj.plate }}</td>#}
-{#                        <td>{{ obj.plug }}</td>#}
-{#                        <td>#}
-{#                            <a href="javascript:deleteCar('{{ obj.plate }}')">Delete</a>#}
-{#                        </td>#}
-{#                    </tr>#}
-{#                {% endfor %}#}
+                <thead>
+                    <tr>
+                        <th>Station</th>
+                        <th>Plug</th>
+                        <th>Car</th>
+                        <th>Date & Time</th>
+                        <th>Duration (min)</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in jsonData %}
+                        <tr>
+                            <td>{{ obj.station }}</td>
+                            <td>{{ obj.plug }}</td>
+                            <td>{{ obj.car }}</td>
+                            <td>{{ obj.time }}</td>
+                            <td>{{ obj.duration }}</td>
+                            <td>
+                                <a class="btn btn-outline-danger" href="javascript:deleteBooking('{{ obj.booking_id }}')">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>

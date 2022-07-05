@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Bookings;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -16,9 +15,7 @@ class BookingFormType extends AbstractType
     {
         $builder
             ->add('car', ChoiceType::class, [
-                'choices' => [
-                    $options[0]
-                ]
+                'choices' => $options['ownedCars']
             ])
             ->add('start_time', DateTimeType::class)
             ->add('duration',NumberType::class)
@@ -29,7 +26,9 @@ class BookingFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Bookings::class,
+            'ownedCars'  => []
         ]);
+
+        $resolver->setAllowedTypes('ownedCars', array());
     }
 }

@@ -3,6 +3,7 @@
 {% block title %}ADMIN: ChargeIT Stations{% endblock %}
 
 {% block body %}
+    {% include 'navbar.html.twig' %}
     <script>
         function deleteStation(uuid) {
             const choice = confirm("Are you sure you want to delete this station?");
@@ -14,13 +15,8 @@
         }
     </script>
     <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper { margin: 1em auto; max-width: 75%; width: 95%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-        table, th, td {
-            font-size: 1em;
-            border: 1px solid black;
-            text-align: center;
-        }
     </style>
 
     <div class="example-wrapper">
@@ -28,29 +24,32 @@
             <h1>Charge IT Station Database</h1>
             <h3>Administration page</h3>
         </div>
-        Stations list:
-        <input type="button" value="Add new station" onclick="newPopup('{{ path('admin_station_create') }}', 'create_station')" style="font-size: 1.08em; width: 100%; height: 2em; margin-bottom: 0.5rem" />
-        <table style="width: 100%">
+        <input class="btn btn-outline-success mt-5 mb-3" type="button" value="Add new station" onclick="newPopup('{{ path('admin_station_create') }}', 'create_station')" style="font-size: 1.08em; width: 100%;" />
+        <table class="table table-striped table-hover" style="width: 100%">
             <colgroup>
                 <col style="width: 50%">
                 <col style="width: 35%">
                 <col style="width: 15%">
             </colgroup>
-            <tr>
-                <th>Station</th>
-                <th>Address</th>
-                <th>Options</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Station</th>
+                    <th>Address</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for obj in jsonData %}
                 <tr>
                     <td>{{ obj.name }}</td>
                     <td>{{ obj.address }}</td>
                     <td>
-                        <a href="{{ path('admin_station_edit', {'id': obj.uuid}) }}">Edit</a><br>
-                        <a href="javascript:deleteStation('{{ obj.uuid }}')">Delete</a>
+                        <a class="btn btn-outline-primary" href="{{ path('admin_station_edit', {'id': obj.uuid}) }}">Edit</a>
+                        <a class="btn btn-outline-danger" href="javascript:deleteStation('{{ obj.uuid }}')">Delete</a>
                     </td>
                 </tr>
             {% endfor %}
+            </tbody>
         </table>
         {#    <ul>#}
         {#        <li>Your controller at <code><a href="{{ 'C:/Users/daian/PhpstormProjects/ChargeIT/ChargeIT/src/Controller/MainPageController.php'|file_link(0) }}">src/Controller/MainPageController.php</a></code></li>#}

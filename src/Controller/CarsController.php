@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Bookings;
 use App\Entity\Cars;
 use App\Entity\UserCar;
 use App\Form\CarFormType;
@@ -30,7 +31,8 @@ class CarsController extends AbstractController
         }
         // render webpage and send list of table rows to twig
         return $this->render('cars/index.html.twig', [
-            'jsonData' => $jsonData
+            'jsonData' => $jsonData,
+            'name'     => $this->getUser()->getName()
         ]);
     }
 
@@ -72,7 +74,7 @@ class CarsController extends AbstractController
     }
 
     #[Route('/car/{plate}/delete', name: 'app_car_delete')]
-    public function car_delete(string $plate, Request $request, ManagerRegistry $doctrine): Response {
+    public function car_delete(string $plate, string $_route, Request $request, ManagerRegistry $doctrine): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
 
         $entityManager = $doctrine->getManager();
@@ -83,8 +85,12 @@ class CarsController extends AbstractController
 
         // check if relations with the car exist
         if (! $carRel) {
-            return new Response("You do not have the car with the license plate " . $plate . " added to your account!", status: 400);
+            return new Response("You do not have a car with the license plate " . $plate . " added to your account!", status: 400);
         }
+
+        // check if there's an active booking containing the car
+        if($entityManager->getRepository(Bookings::class)->findBy(['car' => $car]))
+            return new Response('<title>ChargeIT</title><script>alert("The car you are trying to remove is currently part of a reservation!\nThe car can be removed once the reservation expires or is canceled."); window.location.href="' . $this->generateUrl('app_cars') . '";</script>');
 
         // remove relation between user and car
         $entityManager->remove($carRel);
@@ -96,6 +102,6 @@ class CarsController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_main_page');
+        return $this->redirectToRoute('app_cars');
     }
 }

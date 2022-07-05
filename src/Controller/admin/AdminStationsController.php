@@ -33,7 +33,8 @@ class AdminStationsController extends AbstractController
 
         // render webpage and send list of table rows to twig
         return $this->render('admin/stations.html.twig', [
-            'jsonData' => $jsonData
+            'jsonData'   => $jsonData,
+            'admin_mode' => true
         ]);
     }
 
@@ -100,8 +101,8 @@ class AdminStationsController extends AbstractController
 
         // render webpage and send list of table rows to twig
         return $this->render('admin/station_editor.html.twig', [
-            'jsonData' => $jsonData,
-            'editForm' => $form->createView()
+            'jsonData'   => $jsonData,
+            'editForm'   => $form->createView()
         ]);
     }
 

@@ -30,19 +30,13 @@
         }
     </script>
     <style>
-        .example-wrapper { margin: 1em auto; max-width: 1200px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper { margin: 1em auto; width: 75%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
         label {
             margin-bottom: 0;
         }
-
-        table, th, td {
-            font-size: 1em;
-            border: 1px solid black;
-            text-align: center;
-        }
     </style>
-
+    {% include 'navbar.html.twig' %}
     <div class="example-wrapper">
         <div style="text-align: center">
             <h1>{{ jsonData.name }}</h1>
@@ -64,44 +58,48 @@
                     </div>
                     <br><br>
                     <div id="controls">
-                        <input type="submit" value="Update details" style="font-size: 1.08em; width: 45%; height: 2em; margin-right: 4%" />
-                        <input type="button" value="Delete station" onclick="deleteStation()" style="font-size: 1.08em; width: 45%; height: 2em; margin-left: 4%" />
+                        <input class="btn btn-success" type="submit" value="Update details" style="font-size: 1.08em; width: 45%; margin-right: 4%" />
+                        <input class="btn btn-danger" type="button" value="Delete station" onclick="deleteStation()" style="font-size: 1.08em; width: 45%; margin-left: 4%" />
                         <br>
-                        <input type="button" value="Add new plug" onclick="newPopup('{{ path('admin_plug_create') }}?station={{ jsonData.uuid }}', 'create_plug')" style="font-size: 1.08em; width: 99%; height: 2em; margin-top: 0.5rem" />
+                        <input class="btn btn-primary" type="button" value="Add new plug" onclick="newPopup('{{ path('admin_plug_create') }}?station={{ jsonData.uuid }}', 'create_plug')" style="font-size: 1.08em; width: 99%; margin-top: 0.5rem" />
                         <br><br>
-                        <input type="button" value="Return to station list" onclick="location.href='{{ path('admin_stations') }}'" style="font-size: 1.08em; width: 99%; height: 2em" />
+                        <input class="btn btn-secondary" type="button" value="Return to station list" onclick="location.href='{{ path('admin_stations') }}'" style="font-size: 1.08em; width: 99%" />
                     </div>
                     <div id="loaderMessage" style="vertical-align: center; text-align: center; display: none;">
                         <h3>Please wait...</h3>
                     </div>
                 {{ form_end(editForm) }}
             </div>
-            <div style="width: 40%">
+            <div style="width: 50%">
                 Plugs list:
-                <table style="vertical-align: center; horiz-align: center;">
+                <table class="table table-striped table-hover" style="vertical-align: center; horiz-align: center;">
                     <colgroup>
-                        <col style="width: 25%">
-                        <col style="width: 30%">
                         <col style="width: 20%">
-                        <col style="width: 15%">
+                        <col style="width: 25%">
+                        <col style="width: 25%">
+                        <col style="width: 20%">
                     </colgroup>
-                    <tr>
-                        <th>Status</th>
-                        <th>Connector</th>
-                        <th>Max. Output (kW)</th>
-                        <th>Options</th>
-                    </tr>
-                    {% for obj in jsonData.plugs %}
+                    <thead>
                         <tr>
-                            <td>{{ obj.status ? "Online" : "Offline" }}</td>
-                            <td>{{ obj.connector }}</td>
-                            <td>{{ obj.output }}</td>
-                            <td>
-                                <a href="javascript:newPopup('{{ path('admin_plug_edit', {'id': obj.id}) }}', 'edit_{{ obj.id }}')">Edit</a><br>
-                                <a href="javascript:deletePlug('{{ obj.id }}')">Delete</a>
-                            </td>
+                            <th>Status</th>
+                            <th>Connector</th>
+                            <th>Max. Output (kW)</th>
+                            <th>Options</th>
                         </tr>
-                    {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for obj in jsonData.plugs %}
+                            <tr>
+                                <td>{{ obj.status ? "Online" : "Offline" }}</td>
+                                <td>{{ obj.connector }}</td>
+                                <td>{{ obj.output }}</td>
+                                <td>
+                                    <a class="btn btn-outline-primary" href="javascript:newPopup('{{ path('admin_plug_edit', {'id': obj.id}) }}', 'edit_{{ obj.id }}')">Edit</a>
+                                    <a class="btn btn-outline-danger" href="javascript:deletePlug('{{ obj.id }}')">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>

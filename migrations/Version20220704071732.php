@@ -20,7 +20,7 @@ final class Version20220704071732 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE bookings ADD end_time DATETIME NOT NULL, CHANGE car car VARCHAR(10) DEFAULT NULL, CHANGE plug plug INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE bookings ADD end_time DATETIME NOT NULL, CHANGE car car VARCHAR(10) NOT NULL, CHANGE plug plug INT NOT NULL');
 //        $this->addSql('ALTER TABLE plugs DROP FOREIGN KEY plugs_FK');
 //        $this->addSql('ALTER TABLE plugs CHANGE station station CHAR(36) DEFAULT NULL');
 //        $this->addSql('DROP INDEX plugs_fk ON plugs');
@@ -28,7 +28,7 @@ final class Version20220704071732 extends AbstractMigration
 //        $this->addSql('ALTER TABLE plugs ADD CONSTRAINT plugs_FK FOREIGN KEY (station) REFERENCES stations (uuid)');
 //        $this->addSql('ALTER TABLE stations CHANGE uuid uuid CHAR(36) NOT NULL');
         $this->addSql('ALTER TABLE user CHANGE roles roles LONGTEXT NOT NULL COMMENT \'(DC2Type:json)\'');
-        $this->addSql('ALTER TABLE user_car CHANGE user user INT NOT NULL, CHANGE car car VARCHAR(10) DEFAULT NULL');
+        $this->addSql('ALTER TABLE user_car CHANGE user user INT NOT NULL, CHANGE car car VARCHAR(10) NOT NULL');
     }
 
     public function down(Schema $schema): void

@@ -27,7 +27,7 @@ final class Version20220704075735 extends AbstractMigration
 //        $this->addSql('CREATE INDEX Plugs_fk0 ON plugs (station)');
 //        $this->addSql('ALTER TABLE plugs ADD CONSTRAINT plugs_FK FOREIGN KEY (station) REFERENCES stations (uuid)');
 //        $this->addSql('ALTER TABLE stations CHANGE uuid uuid VARCHAR(36) NOT NULL');
-        $this->addSql('ALTER TABLE user_car CHANGE user user INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE user_car CHANGE user user INT NOT NULL');
     }
 
     public function down(Schema $schema): void

@@ -11,7 +11,7 @@ class HelloWorldController extends AbstractController
     #[Route("/hello", "hello")]
     public function hello_world(): Response {
         return $this->render('HelloWorld.html.twig', [
-            'database' => getenv('DATABASE_URL')
+            'database' => $_ENV["DATABASE_URL"]
         ]);
     }
 }
