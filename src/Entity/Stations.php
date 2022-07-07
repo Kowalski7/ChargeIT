@@ -6,33 +6,23 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Stations
- *
- * @ORM\Table(name="stations")
- * @ORM\Entity
  */
+#[ORM\Table(name: "stations")]
+#[ORM\Entity]
 class Stations
 {
-    /**
-     * @var string
-     *
-     * @ORM\Id
-     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
-     */
-    private $uuid;
+    #[ORM\Id]
+    #[ORM\Column(name: "uuid", type: "guid", length: 36, unique: true, nullable: false)]
+    private string $uuid;
+
+    #[ORM\Column(name: "plus_code", type: "string", length: 30, nullable: false)]
+    private string $plusCode;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="plus_code", type="string", length=30, nullable=false)
      */
-    private $plusCode;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=50, nullable=false)
-     */
-    private $name;
+     #[ORM\Column(name: "name", type: "string", length: 50, nullable: false)]
+    private string $name;
 
     public function getPlusCode(): ?string
     {

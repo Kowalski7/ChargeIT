@@ -40,6 +40,6 @@ final class Version20220704075735 extends AbstractMigration
 //        $this->addSql('CREATE INDEX plugs_FK ON plugs (station)');
 //        $this->addSql('ALTER TABLE plugs ADD CONSTRAINT FK_FF8A28349F39F8B1 FOREIGN KEY (station) REFERENCES stations (uuid)');
 //        $this->addSql('ALTER TABLE stations CHANGE uuid uuid CHAR(36) NOT NULL');
-        $this->addSql('ALTER TABLE user_car CHANGE user user INT NOT NULL');
+//        $this->addSql('ALTER TABLE user_car CHANGE user user INT NOT NULL');
     }
 }

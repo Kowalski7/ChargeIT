@@ -3,44 +3,57 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- */
+
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
+    private int $id;
+
+    #[ORM\Column(type: "string", length: 180, unique: true)]
+    private string $email;
+
+    #[ORM\Column(type: "json")]
+    private mixed $roles = [];
+
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * The hashed password
      */
-    private $id;
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
-    private $email;
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
-     */
-    private $password;
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
-    /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private $phone;
+     #[ORM\Column(type: "string")]
+    private string $password;
+
+    #[ORM\Column(type: "string", length: 100)]
+    private string $name;
+
+
+    #[ORM\Column(type: "string", length: 10, nullable: true)]
+    private string $phone;
+
+    #[ORM\ManyToMany(targetEntity: Cars::class, inversedBy: "users")]
+    #[ORM\JoinTable(name: "user_car")]
+    #[ORM\JoinColumn(name: "user", referencedColumnName: "id")]
+    #[ORM\InverseJoinColumn(name: "car", referencedColumnName: "license_plate")]
+    private mixed $cars;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Bookings::class, orphanRemoval: true)]
+    private $bookings;
+
+    public function __construct()
+    {
+        $this->cars = new ArrayCollection();
+        $this->bookings = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -119,6 +132,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cars>
+     */
+    public function getCars(): Collection
+    {
+        return $this->cars;
+    }
+
+    public function addCar(Cars $car): self
+    {
+        if (!$this->cars->contains($car)) {
+            $this->cars[] = $car;
+        }
+
+        return $this;
+    }
+
+    public function removeCar(Cars $car): self
+    {
+        $this->cars->removeElement($car);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bookings>
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Bookings $booking): self
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings[] = $booking;
+            $booking->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Bookings $booking): self
+    {
+        if ($this->bookings->removeElement($booking)) {
+            // set the owning side to null (unless already changed)
+            if ($booking->getUser() === $this) {
+                $booking->setUser(null);
+            }
+        }
 
         return $this;
     }

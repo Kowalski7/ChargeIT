@@ -9,6 +9,10 @@
         window.close();
         {% endif %}
 
+        {% if submit_error|default %}
+        alert("{{ submit_error }}");
+        {% endif %}
+
         window.onsubmit = function() {
             window.onunload = function() {
                 window.opener.location.reload();

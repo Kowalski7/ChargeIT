@@ -5,10 +5,10 @@
 {% block body %}
     {% include 'navbar.html.twig' %}
     <script>
-        function deleteCar(plate) {
+        function deleteCar(ownIdx) {
             const choice = confirm("Are you sure you want to remove this car?");
             if(choice)
-                location.href = "/car/" + plate + "/delete";
+                location.href = "/car/" + ownIdx + "/delete";
         }
         function newPopup(url, title) {
             window.open(url, title, 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=450,height=330')
@@ -46,7 +46,7 @@
                             <td>{{ obj.plate }}</td>
                             <td>{{ obj.plug }}</td>
                             <td>
-                                <a class="btn btn-outline-danger" href="javascript:deleteCar('{{ obj.plate }}')">Delete</a>
+                                <a class="btn btn-outline-danger" href="javascript:deleteCar('{{ obj.ownIdx }}')">Delete</a>
                             </td>
                         </tr>
                     {% endfor %}

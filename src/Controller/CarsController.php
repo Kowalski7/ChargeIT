@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Bookings;
 use App\Entity\Cars;
-use App\Entity\UserCar;
 use App\Form\CarFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use stdClass;
@@ -20,13 +19,13 @@ class CarsController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
 
-        $carRels = $doctrine->getRepository(UserCar::class)->findBy(['user' => $this->getUser()->getId()]);
+        $cars = $this->getUser()->getCars();
         $jsonData = [];
-        for($i = 0; $i<sizeof($carRels); $i++) {
-            $car = $doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $carRels[$i]->getCar()]);
+        for($i=0; $i<sizeof($cars); $i++) {
             $jsonObj = new stdClass();
-            $jsonObj->plate = $car->getLicensePlate();
-            $jsonObj->plug = $car->getPlugType();
+            $jsonObj->ownIdx = $i;
+            $jsonObj->plate = $cars[$i]->getLicensePlate();
+            $jsonObj->plug = $cars[$i]->getPlugType();
             $jsonData[] = $jsonObj;
         }
         // render webpage and send list of table rows to twig
@@ -42,26 +41,25 @@ class CarsController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
 
         $car = new Cars();
-        $carRel = new UserCar();
         $close_window = false;
         $already_added = false;
         $form = $this->createForm(CarFormType::class, $car);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $car->setLicensePlate($form->get('license_plate')->getData());
-            $car->setPlugType($form->get('plug_type')->getData());
-            $dbCar = $doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $car->getLicensePlate()]);
+            $dbCar = $doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $form->get('license_plate')->getData()]);
             if(!$dbCar) {
+                $car->setLicensePlate($form->get('license_plate')->getData());
+                $car->setPlugType($form->get('plug_type')->getData());
+                $car->addUser($this->getUser());
                 $doctrine->getManager()->persist($car);
-                $carRel->setCar($car);
-            } else
-                $carRel->setCar($dbCar);
-            $carRel->setUser($this->getUser());
-            if(! $doctrine->getRepository(UserCar::class)->findOneBy(['user' => $carRel->getUser(), 'car' => $carRel->getCar()])) {
-                $doctrine->getManager()->persist($carRel);
-                $doctrine->getManager()->flush();
-            } else
-                $already_added = true;
+            } else {
+                if(! $dbCar->getUsers()->contains($this->getUser()))
+                    $dbCar->addUser($this->getUser());
+                else
+                    $already_added = true;
+            }
+
+            $doctrine->getManager()->flush();
             $close_window = true;
         }
 
@@ -73,19 +71,20 @@ class CarsController extends AbstractController
         ]);
     }
 
-    #[Route('/car/{plate}/delete', name: 'app_car_delete')]
-    public function car_delete(string $plate, string $_route, Request $request, ManagerRegistry $doctrine): Response {
+    #[Route('/car/{ownIdx}/delete', name: 'app_car_delete')]
+    public function car_delete(string $ownIdx, string $_route, Request $request, ManagerRegistry $doctrine): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
 
         $entityManager = $doctrine->getManager();
-        $user_car = $entityManager->getRepository(UserCar::class);
+        $car = $this->getUser()->getCars()[$ownIdx];
 
-        $car = $entityManager->getRepository(Cars::class)->findOneBy(['licensePlate' => $plate]);
-        $carRel = $user_car->findOneBy(['car' => $car, 'user' => $this->getUser()]);
-
-        // check if relations with the car exist
-        if (! $carRel) {
-            return new Response("You do not have a car with the license plate " . $plate . " added to your account!", status: 400);
+//        $ownership_check = $this->getUser()->getCars()->exists(function($key, $element) use ($plate) {
+//            return $element->getLicensePlate() == $plate;
+//        });
+//
+        // check if user owns this car
+        if (! $car) {
+            return new Response("The car you are trying to remove does not appear to be added to your account!", status: 404);
         }
 
         // check if there's an active booking containing the car
@@ -93,15 +92,14 @@ class CarsController extends AbstractController
             return new Response('<title>ChargeIT</title><script>alert("The car you are trying to remove is currently part of a reservation!\nThe car can be removed once the reservation expires or is canceled."); window.location.href="' . $this->generateUrl('app_cars') . '";</script>');
 
         // remove relation between user and car
-        $entityManager->remove($carRel);
+        $this->getUser()->removeCar($car);
         $entityManager->flush();
 
         // check to see if the car is part of other relations or it is safe to remove
-        if(! $user_car->findBy(['car' => $plate])) {
+        if(sizeof($car->getUsers()) == 0) {
             $entityManager->remove($car);
             $entityManager->flush();
         }
-
         return $this->redirectToRoute('app_cars');
     }
 }

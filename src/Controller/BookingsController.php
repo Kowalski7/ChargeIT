@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Bookings;
 use App\Entity\Cars;
 use App\Entity\Plugs;
-use App\Entity\Stations;
 use App\Entity\UserCar;
 use App\Form\BookingFormType;
 use DateInterval;
@@ -21,13 +20,11 @@ class BookingsController extends AbstractController
     #[Route('/bookings', name: 'app_bookings')]
     public function bookings(Request $request, ManagerRegistry $doctrine): Response
     {
-        $bookings = $doctrine->getRepository(Bookings::class)->findBy(['user' => $this->getUser()]);
-        $stationRepo = $doctrine->getRepository(Stations::class);
         $jsonData = [];
-        foreach($bookings as $booking) {
-            $station = $stationRepo->findOneBy(['uuid' => $booking->getPlug()->getStation()]);
+        foreach($this->getUser()->getBookings() as $booking) {
+            $station = $booking->getPlug()->getStation();
             $jsonObj = new stdClass();
-            $jsonObj->booking_id = $booking->getBookingId();
+            $jsonObj->booking_id = $booking->getId();
             $jsonObj->station = $station->getName();
             $jsonObj->plug = $booking->getPlug()->getPlugId() . '. ' . $booking->getPlug()->getConnectorType();
             $jsonObj->car = $booking->getCar()->getLicensePlate();
@@ -50,30 +47,42 @@ class BookingsController extends AbstractController
     public function booking_create(Request $request, ManagerRegistry $doctrine): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $error = null;
 
         $booking = new Bookings();
         $close_window = false;
         $ownedCars = [];
-        $carRels = $doctrine->getRepository(UserCar::class)->findBy(['user' => $this->getUser()]);
-        foreach($carRels as $rel) {
-            $ownedCars[$rel->getCar()->getLicensePlate()] = $rel->getCar()->getLicensePlate();
+        foreach($this->getUser()->getCars() as $car) {
+            if(! $car->getBooking())
+                $ownedCars[$car->getLicensePlate()] = $car->getLicensePlate();
+            //dd($car->getBooking());
         }
         $form = $this->createForm(BookingFormType::class, options: ['ownedCars' => $ownedCars]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $plug = $doctrine->getRepository(Plugs::class)->findOneBy(['plugId' => $form->get('plug')->getData()]);
             $booking->setUser($this->getUser());
             $booking->setCar($doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $form->get('car')->getData()]));
             $booking->setStartTime($form->get('start_time')->getData());
             $booking->setDuration($form->get('duration')->getData());
             $booking->setEndTime(clone $booking->getStartTime())->getEndTime()->add(new DateInterval('PT' . $booking->getDuration() . 'M'));
-            $booking->setPlug($doctrine->getRepository(Plugs::class)->findOneBy(['plugId' => $form->get('plug')->getData()]));
-            $doctrine->getManager()->persist($booking);
-            $doctrine->getManager()->flush();
-            $close_window = true;
+
+            // verifications
+            if(! $plug)
+                $error = "The specified plug does not exist!";
+            else
+                $booking->setPlug($plug);
+
+            if(! $error) {
+                $doctrine->getManager()->persist($booking);
+                $doctrine->getManager()->flush();
+                $close_window = true;
+            }
         }
 
         // render webpage and send list of table rows to twig
         return $this->render('bookings/booking_creator.html.twig', [
+            'submit_error' => $error,
             'createForm' => $form->createView(),
             'close_window' => $close_window
         ]);
@@ -84,7 +93,7 @@ class BookingsController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
 
         $entityManager = $doctrine->getManager();
-        $booking = $entityManager->getRepository(Bookings::class)->findOneBy(['bookingId' => $id]);
+        $booking = $entityManager->getRepository(Bookings::class)->findOneBy(['id' => $id]);
 
         // check if booking exists
         if (!$booking)
