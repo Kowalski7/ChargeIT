@@ -55,9 +55,8 @@ class BookingsController extends AbstractController
         foreach($this->getUser()->getCars() as $car) {
             if(! $car->getBooking())
                 $ownedCars[$car->getLicensePlate()] = $car->getLicensePlate();
-            //dd($car->getBooking());
         }
-        $form = $this->createForm(BookingFormType::class, options: ['ownedCars' => $ownedCars]);
+        $form = $this->createForm(BookingFormType::class, options: ['ownedCars' => $ownedCars, 'plugId' => (int) $request->query->get('plug')]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $plug = $doctrine->getRepository(Plugs::class)->findOneBy(['plugId' => $form->get('plug')->getData()]);

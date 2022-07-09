@@ -16,7 +16,7 @@ class AdminPlugsController extends AbstractController
     #[Route('/admin/plug', name: 'admin_plug_create')]
     public function plug_create(Request $request, ManagerRegistry $doctrine) : Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to log in
 
         // verify if given station exists
         $station_uuid = $request->query->get('station');
@@ -48,7 +48,7 @@ class AdminPlugsController extends AbstractController
     #[Route('/admin/plug/{id}/edit', name: 'admin_plug_edit')]
     public function plug_edit(string $id, Request $request, ManagerRegistry $doctrine) : Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to log in
 
         $plug = $doctrine->getRepository(Plugs::class)->findOneBy(['plugId' => $id]);
 
@@ -78,7 +78,7 @@ class AdminPlugsController extends AbstractController
 
     #[Route('/admin/plug/{id}/delete', name: 'admin_plug_delete')]
     public function plug_delete(string $id, Request $request, ManagerRegistry $doctrine) : Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to log in
 
         $entityManager = $doctrine->getManager();
         $plug = $entityManager->getRepository(Plugs::class)->findOneBy(['plugId' => $id]);

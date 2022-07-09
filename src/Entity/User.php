@@ -29,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * The hashed password
      */
-     #[ORM\Column(type: "string")]
+    #[ORM\Column(type: "string")]
     private string $password;
 
     #[ORM\Column(type: "string", length: 100)]

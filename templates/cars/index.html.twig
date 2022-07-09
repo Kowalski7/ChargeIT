@@ -2,8 +2,7 @@
 
 {% block title %}ChargeIT My Cars{% endblock %}
 
-{% block body %}
-    {% include 'navbar.html.twig' %}
+{% block navigable %}
     <script>
         function deleteCar(ownIdx) {
             const choice = confirm("Are you sure you want to remove this car?");

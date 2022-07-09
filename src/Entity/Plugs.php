@@ -23,9 +23,9 @@ class Plugs
     #[ORM\Column(name: "max_output", type: "decimal", precision: 5, scale: 1, nullable: true, options: ["default" => NULL])]
     private string|null $maxOutput = NULL;
 
-    #[ORM\ManyToOne(targetEntity: "Stations")]
+    #[ORM\ManyToOne(targetEntity: Stations::class, inversedBy: 'plugs')]
     #[ORM\JoinColumn(name: "station", referencedColumnName: "uuid", nullable: false)]
-    private Stations $station;
+    private $station;
 
     public function getPlugId(): ?int
     {
@@ -68,6 +68,11 @@ class Plugs
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return '{id: ' . $this->plugId . ', station: ' . $this->station->getUuid() . ', connector: ' . $this->connectorType . ', max_output: ' . $this->maxOutput . '}';
+    }
+
     public function getStation(): ?Stations
     {
         return $this->station;
@@ -78,10 +83,5 @@ class Plugs
         $this->station = $station;
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return '{id: ' . $this->plugId . ', station: ' . $this->station->getUuid() . ', connector: ' . $this->connectorType . ', max_output: ' . $this->maxOutput . '}';
     }
 }

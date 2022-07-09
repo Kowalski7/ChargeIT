@@ -17,7 +17,7 @@ class AdminStationsController extends AbstractController
 {
     #[Route('/admin/stations', name: 'admin_stations')]
     public function stations(ManagerRegistry $doctrine) : Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to be admin
 
         $stations = $doctrine->getRepository(Stations::class)->findAll();
 
@@ -40,7 +40,7 @@ class AdminStationsController extends AbstractController
 
     #[Route('/admin/station', name: 'admin_station_create')]
     public function station_create(Request $request, ManagerRegistry $doctrine) : Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to be admin
 
         $station = new Stations();
         $close_window = false;
@@ -64,7 +64,7 @@ class AdminStationsController extends AbstractController
 
     #[Route('/admin/station/{id}/edit', name: 'admin_station_edit')]
     public function station_edit(string $id, Request $request, ManagerRegistry $doctrine) : Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to be admin
 
         $station = $doctrine->getRepository(Stations::class)->findOneBy([ 'uuid' => $id ]);
         $plugs = $doctrine->getRepository(Plugs::class)->findBy([ 'station' => $id ]);
@@ -108,7 +108,7 @@ class AdminStationsController extends AbstractController
 
     #[Route('/admin/station/{id}/delete', name: 'admin_station_delete')]
     public function station_delete(string $id, Request $request, ManagerRegistry $doctrine) : Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); // <- require user to log in
+        $this->denyAccessUnlessGranted('ROLE_ADMIN'); // <- require user to be admin
 
         $entityManager = $doctrine->getManager();
         $station = $entityManager->getRepository(Stations::class)->findOneBy([ 'uuid' => $id ]);

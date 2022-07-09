@@ -19,16 +19,20 @@ class BookingFormType extends AbstractType
             ])
             ->add('start_time', DateTimeType::class)
             ->add('duration',NumberType::class)
-            ->add('plug', NumberType::class)
+            ->add('plug', NumberType::class, [
+                'data' => $options['plugId'] ?: null
+            ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'ownedCars'  => []
+            'ownedCars'  => [],
+            'plugId'     => null
         ]);
 
         $resolver->setAllowedTypes('ownedCars', array());
+        $resolver->setAllowedTypes('plugId', 'integer');
     }
 }

@@ -2,7 +2,7 @@
 
 {% block title %}ADMIN: ChargeIT Station Editor{% endblock %}
 
-{% block body %}
+{% block navigable %}
     <script>
         window.onsubmit = function() {
             hideControls();
@@ -36,7 +36,6 @@
             margin-bottom: 0;
         }
     </style>
-    {% include 'navbar.html.twig' %}
     <div class="example-wrapper">
         <div style="text-align: center">
             <h1>{{ jsonData.name }}</h1>
