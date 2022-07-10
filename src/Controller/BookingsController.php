@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Bookings;
 use App\Entity\Cars;
 use App\Entity\Plugs;
-use App\Entity\UserCar;
 use App\Form\BookingFormType;
 use DateInterval;
 use Doctrine\Persistence\ManagerRegistry;
@@ -60,8 +59,8 @@ class BookingsController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $plug = $doctrine->getRepository(Plugs::class)->findOneBy(['plugId' => $form->get('plug')->getData()]);
+            $car = $doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $form->get('car')->getData()]);
             $booking->setUser($this->getUser());
-            $booking->setCar($doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $form->get('car')->getData()]));
             $booking->setStartTime($form->get('start_time')->getData());
             $booking->setDuration($form->get('duration')->getData());
             $booking->setEndTime(clone $booking->getStartTime())->getEndTime()->add(new DateInterval('PT' . $booking->getDuration() . 'M'));
@@ -69,8 +68,14 @@ class BookingsController extends AbstractController
             // verifications
             if(! $plug)
                 $error = "The specified plug does not exist!";
-            else
+            elseif(! $plug->getStatus())
+                $error = "The specified plug is unavailable!";
+            elseif((! $car) || (! $car->getUsers()->contains($this->getUser())))
+                $error = "The chosen car was not added into the 'My Cars' list!\nIf you would like to use this car, please add it to your account first.";
+            else {
+                $booking->setCar($car);
                 $booking->setPlug($plug);
+            }
 
             if(! $error) {
                 $doctrine->getManager()->persist($booking);
@@ -81,6 +86,7 @@ class BookingsController extends AbstractController
 
         // render webpage and send list of table rows to twig
         return $this->render('bookings/booking_creator.html.twig', [
+            'modal_mode' => $request->query->get('modal') == 'true',
             'submit_error' => $error,
             'createForm' => $form->createView(),
             'close_window' => $close_window

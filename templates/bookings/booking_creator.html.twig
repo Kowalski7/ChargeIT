@@ -3,6 +3,47 @@
 {% block title %}ChargeIT Booking Creator{% endblock %}
 
 {% block body %}
+{% if modal_mode|default %}
+    <script>
+        window.onsubmit = function() {
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.classList.add("disabled");
+            submitBtn.disabled = "";
+            submitBtn.style.cursor = "not-allowed";
+            submitBtn.value = "Please wait...";
+        }
+    </script>
+    <div id="modalForm">
+    {{ form_start(createForm) }}
+        <div class="form-group">
+            <label for="carInp" class="col-form-label">Car:</label>
+            {{ form_widget(createForm.car, {'attr': {'id': 'carInp', 'class': 'form-control'}}) }}
+{#            <input type="text" class="form-control" id="recipient-name">#}
+        </div>
+        <div class="form-group">
+            <label for="timeInp" class="col-form-label">Date & Time:</label>
+            {{ form_widget(createForm.start_time, {'attr': {'id': 'timeInp', 'class': 'form-control', 'style': 'display: flex; justify-content: space-between'}}) }}
+        </div>
+        <div class="form-group">
+            <label for="durationInp" class="col-form-label">Duration (min):</label>
+            {{ form_widget(createForm.duration, {'type': 'number', 'attr': {'id': 'durationInp', 'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group" style="display: none">
+            <label for="plugInp" class="col-form-label">Plug ID:</label>
+            {{ form_widget(createForm.plug, {'type': 'number', 'attr': {'id': 'plugInp', 'class': 'form-control'}}) }}
+        </div>
+        <input id="submitBtn" type="submit" class="btn btn-success" value="Create booking" style="width: 100%;" />
+    {{ form_end(createForm) }}
+    </div>
+    <script>
+        {% if close_window|default %}
+        document.getElementById('modalForm').innerHTML = '<div style="text-align: center"><i class="bi bi-calendar-check" style="font-size: 5em"></i><h3 class="mt-4">Booking created!</h3><h4>You can now close this popup.</h4></div>';
+        {% endif %}
+        {% if submit_error|default %}
+        alert("{{ submit_error }}");
+        {% endif %}
+    </script>
+{% else %}
     <script>
         {% if close_window|default %}
         document.body.innerText = "Booking created! You can now close this window.";
@@ -57,4 +98,5 @@
             <input style="width: 100%" onclick="window.close()" type="button" value="Cancel" />
         {{ form_end(createForm) }}
     </div>
+{% endif %}
 {% endblock %}

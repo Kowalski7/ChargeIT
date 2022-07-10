@@ -18,9 +18,17 @@ class BookingFormType extends AbstractType
                 'choices' => $options['ownedCars']
             ])
             ->add('start_time', DateTimeType::class)
-            ->add('duration',NumberType::class)
+            ->add('duration',NumberType::class, [
+                'attr' => [
+                    'max'  => 10080,
+                    'min' => 1
+                ]
+            ])
             ->add('plug', NumberType::class, [
-                'data' => $options['plugId'] ?: null
+                'data' => $options['plugId'] ?: null,
+                'attr' => [
+                    'min' => 0
+                ]
             ])
         ;
     }
