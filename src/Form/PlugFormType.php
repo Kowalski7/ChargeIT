@@ -23,7 +23,8 @@ class PlugFormType extends AbstractType
             ->add('max_output', NumberType::class, [
                 'attr' => [
                     'max'  => 99999,
-                    'min' => 0
+                    'min' => 0,
+                    'step' => '0.1'
                 ]
             ])
             ->add('status', CheckboxType::class, [

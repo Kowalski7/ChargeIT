@@ -2,6 +2,8 @@
 
 namespace App\Form;
 
+use DateInterval;
+use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -13,11 +15,20 @@ class BookingFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $currentDateTime = new DateTime('now');
         $builder
             ->add('car', ChoiceType::class, [
                 'choices' => $options['ownedCars']
             ])
-            ->add('start_time', DateTimeType::class)
+            ->add('start_time', DateTimeType::class, [
+                'widget' => 'single_text',
+                'years' => [date('Y'), date('Y')+1],
+                'attr' => [
+                    'value' => $currentDateTime->format('Y-m-d\TH:i'),
+                    'min' => $currentDateTime->format('Y-m-d\TH:i'),
+                    'max' => (clone $currentDateTime)->add(new DateInterval('P1Y'))->format('Y-m-d\TH:i')
+                ]
+            ])
             ->add('duration',NumberType::class, [
                 'attr' => [
                     'max'  => 10080,

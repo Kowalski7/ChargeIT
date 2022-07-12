@@ -16,7 +16,6 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            access_denied_handler: App\Security\AccessDeniedHandler
             form_login:
                 login_path: app_login
                 check_path: app_login

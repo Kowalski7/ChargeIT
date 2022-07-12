@@ -7,6 +7,7 @@ use App\Entity\Cars;
 use App\Entity\Plugs;
 use App\Form\BookingFormType;
 use DateInterval;
+use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use stdClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,20 +51,19 @@ class BookingsController extends AbstractController
 
         $booking = new Bookings();
         $close_window = false;
+        $availableCars = [];
         $ownedCars = [];
         foreach($this->getUser()->getCars() as $car) {
+            $ownedCars[$car->getLicensePlate()] = $car->getPlugType();
             if(! $car->getBooking())
-                $ownedCars[$car->getLicensePlate()] = $car->getLicensePlate();
+                $availableCars[$car->getLicensePlate()] = $car->getLicensePlate();
         }
-        $form = $this->createForm(BookingFormType::class, options: ['ownedCars' => $ownedCars, 'plugId' => (int) $request->query->get('plug')]);
+        $form = $this->createForm(BookingFormType::class, options: ['ownedCars' => $availableCars, 'plugId' => (int) $request->query->get('plug')]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $plug = $doctrine->getRepository(Plugs::class)->findOneBy(['plugId' => $form->get('plug')->getData()]);
             $car = $doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => $form->get('car')->getData()]);
-            $booking->setUser($this->getUser());
-            $booking->setStartTime($form->get('start_time')->getData());
-            $booking->setDuration($form->get('duration')->getData());
-            $booking->setEndTime(clone $booking->getStartTime())->getEndTime()->add(new DateInterval('PT' . $booking->getDuration() . 'M'));
+            $currentTimeDate = new DateTime();
 
             // verifications
             if(! $plug)
@@ -72,10 +72,20 @@ class BookingsController extends AbstractController
                 $error = "The specified plug is unavailable!";
             elseif((! $car) || (! $car->getUsers()->contains($this->getUser())))
                 $error = "The chosen car was not added into the 'My Cars' list!\nIf you would like to use this car, please add it to your account first.";
+            elseif($form->get('start_time')->getData() < $currentTimeDate)
+                $error = "The start time and date cannot be older than the current time and date!";
+            elseif($form->get('duration')->getData() < 1 || $form->get('duration')->getData() > 10080)
+                $error = "The booking duration must be at least 1 minute and at most 1 week!";
             else {
                 $booking->setCar($car);
                 $booking->setPlug($plug);
+                $booking->setUser($this->getUser());
+                $booking->setStartTime($form->get('start_time')->getData());
+                $booking->setDuration($form->get('duration')->getData());
+                $booking->setEndTime(clone $booking->getStartTime())->getEndTime()->add(new DateInterval('PT' . $booking->getDuration() . 'M'));
             }
+
+
 
             if(! $error) {
                 $doctrine->getManager()->persist($booking);
@@ -86,10 +96,11 @@ class BookingsController extends AbstractController
 
         // render webpage and send list of table rows to twig
         return $this->render('bookings/booking_creator.html.twig', [
-            'modal_mode' => $request->query->get('modal') == 'true',
             'submit_error' => $error,
-            'createForm' => $form->createView(),
-            'close_window' => $close_window
+            'close_window' => $close_window,
+            'owned_cars' => $ownedCars,
+            'createForm' => $form->createView()
+
         ]);
     }
 

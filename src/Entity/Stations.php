@@ -20,6 +20,12 @@ class Stations
     #[ORM\Column(name: "plus_code", type: "string", length: 30, nullable: false)]
     private string $plusCode;
 
+    #[ORM\Column(name: "lat", type: "decimal", precision: 18, scale: 15, nullable: false)]
+    private string $lat;
+
+    #[ORM\Column(name: "lon", type: "decimal", precision: 18, scale: 15, nullable: false)]
+    private string $lon;
+
     /**
      * @var string
      */
@@ -66,6 +72,38 @@ class Stations
         $this->uuid = $uuid;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLat(): string
+    {
+        return $this->lat;
+    }
+
+    /**
+     * @param string $lat
+     */
+    public function setLat(string $lat): void
+    {
+        $this->lat = $lat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLon(): string
+    {
+        return $this->lon;
+    }
+
+    /**
+     * @param string $lon
+     */
+    public function setLon(string $lon): void
+    {
+        $this->lon = $lon;
     }
 
     public function __toString(): string

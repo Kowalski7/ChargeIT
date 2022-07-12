@@ -3,7 +3,55 @@
 {% block title %}ChargeIT Booking Creator{% endblock %}
 
 {% block body %}
-{% if modal_mode|default %}
+    <script>
+        const ownedCars = {{ owned_cars|json_encode|raw }};
+        let plug = null;
+
+        function displayWarning(message = null, color = 'black', disableSubmit = false) {
+            const errorMessage = document.getElementById("errorMessage");
+            const submitBtn = document.getElementById("submitBtn");
+
+            if(message) {
+                errorMessage.style.color = color;
+                errorMessage.innerText = ' ' + message;
+                errorMessage.style.display = "";
+            } else
+                errorMessage.style.display = "none";
+
+            if(disableSubmit) {
+                submitBtn.classList.add("disabled");
+                submitBtn.style.cursor = "not-allowed";
+                submitBtn.disabled = true;
+            } else {
+                submitBtn.classList.remove("disabled");
+                submitBtn.style.removeProperty('cursor');
+                submitBtn.disabled = false;
+            }
+        }
+
+        function checkCompatibility() {
+            if(plug.connector !== ownedCars[document.getElementById("booking_form_car").value])
+                displayWarning("The selected car might be incompatible with this plug!", "darkorange");
+            else
+                displayWarning();
+        }
+
+        function loadPlugData() {
+            $.get("/api/plug/" + document.getElementById("booking_form_plug").value, function(data, status) {
+                plug = data;
+                checkCompatibility();
+            })
+        }
+
+        $(document).on('change', '#modalForm', function() {
+            if(new Date() > new Date(document.getElementById('booking_form_start_time').value)) {
+                displayWarning("Invalid time and date!", "red", true);
+            } else {
+                displayWarning();
+                checkCompatibility();
+            }
+        })
+    </script>
     <script>
         window.onsubmit = function() {
             const submitBtn = document.getElementById("submitBtn");
@@ -16,26 +64,30 @@
     <div id="modalForm">
     {{ form_start(createForm) }}
         <div class="form-group">
-            <label for="carInp" class="col-form-label">Car:</label>
-            {{ form_widget(createForm.car, {'attr': {'id': 'carInp', 'class': 'form-control'}}) }}
+            <label for="booking_form_car" class="col-form-label">Car:</label>
+            {{ form_widget(createForm.car, {'attr': {'class': 'form-control'}}) }}
 {#            <input type="text" class="form-control" id="recipient-name">#}
         </div>
         <div class="form-group">
-            <label for="timeInp" class="col-form-label">Date & Time:</label>
-            {{ form_widget(createForm.start_time, {'attr': {'id': 'timeInp', 'class': 'form-control', 'style': 'display: flex; justify-content: space-between'}}) }}
+            <label for="booking_form_start_time" class="col-form-label">Date & Time:</label>
+            {{ form_widget(createForm.start_time, {'attr': {'class': 'form-control', 'style': 'display: flex; justify-content: space-between'}}) }}
         </div>
         <div class="form-group">
-            <label for="durationInp" class="col-form-label">Duration (min):</label>
-            {{ form_widget(createForm.duration, {'type': 'number', 'attr': {'id': 'durationInp', 'class': 'form-control'}}) }}
+            <label for="booking_form_duration" class="col-form-label">Duration (min):</label>
+            {{ form_widget(createForm.duration, {'type': 'number', 'attr': {'class': 'form-control'}}) }}
         </div>
         <div class="form-group" style="display: none">
-            <label for="plugInp" class="col-form-label">Plug ID:</label>
-            {{ form_widget(createForm.plug, {'type': 'number', 'attr': {'id': 'plugInp', 'class': 'form-control'}}) }}
+            <label for="booking_form_plug" class="col-form-label">Plug ID:</label>
+            {{ form_widget(createForm.plug, {'type': 'number', 'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group" style="text-align:center;">
+            <p id="errorMessage" class="bi bi-exclamation-triangle-fill" style="display: none"></p>
         </div>
         <input id="submitBtn" type="submit" class="btn btn-success" value="Create booking" style="width: 100%;" />
     {{ form_end(createForm) }}
     </div>
     <script>
+        loadPlugData();
         {% if close_window|default %}
         document.getElementById('modalForm').innerHTML = '<div style="text-align: center"><i class="bi bi-calendar-check" style="font-size: 5em"></i><h3 class="mt-4">Booking created!</h3><h4>You can now close this popup.</h4></div>';
         {% endif %}
@@ -43,60 +95,4 @@
         alert("{{ submit_error }}");
         {% endif %}
     </script>
-{% else %}
-    <script>
-        {% if close_window|default %}
-        document.body.innerText = "Booking created! You can now close this window.";
-        window.close();
-        {% endif %}
-
-        {% if submit_error|default %}
-        alert("{{ submit_error }}");
-        {% endif %}
-
-        window.onsubmit = function() {
-            window.onunload = function() {
-                window.opener.location.reload();
-            }
-            hideControls();
-        };
-
-        function hideControls() {
-            document.getElementById('controls').style.display = "none";
-            document.getElementById('loaderMessage').style.display = "";
-        }
-    </script>
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-        body {
-            overflow: hidden;
-        }
-    </style>
-
-    <div class="example-wrapper">
-        <h1>Booking creator</h1>
-
-        {{ form_start(createForm) }}
-            <div style="display: flex; margin-bottom: 0.5rem">
-                <label for="carInp" style="font-size: 1.1em; height: 100%; width: 50%">Car: </label>
-                {{ form_widget(createForm.car, {'attr': {'id': 'carInp', 'style': 'width: 50%'}}) }}
-            </div>
-            <div style="display: flex; margin-bottom: 0.5rem">
-                <label for="timeInp" style="font-size: 1.1em; height: 100%; width: 50%">Date & Time: </label>
-                {{ form_widget(createForm.start_time, {'attr': {'id': 'timeInp', 'style': 'width: 50%'}}) }}
-            </div>
-            <div style="display: flex; margin-bottom: 0.5rem">
-                <label for="durationInp" style="font-size: 1.1em; height: 100%; width: 50%">Duration (min): </label>
-                {{ form_widget(createForm.duration, {'attr': {'id': 'durationInp', 'style': 'width: 50%'}}) }}
-            </div>
-            <div style="display: flex; margin-bottom: 0.5rem">
-                <label for="plugInp" style="font-size: 1.1em; height: 100%; width: 50%">Plug ID: </label>
-                {{ form_widget(createForm.plug, {'attr': {'id': 'plugInp', 'style': 'width: 50%'}}) }}
-            </div>
-            <input style="width: 100%; margin-bottom: 0.5rem" type="submit" value="Create" />
-            <input style="width: 100%" onclick="window.close()" type="button" value="Cancel" />
-        {{ form_end(createForm) }}
-    </div>
-{% endif %}
 {% endblock %}

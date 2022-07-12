@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forbidden{% endblock %}
+
+{% block body %}
+    <div class="text-center">
+        <h1>Forbidden</h1>
+        <h4 class="nv-subtitle text-muted">ERR_403_FORBIDDEN</h4>
+        <br>
+        <p>
+            You do not have permission to access this page!
+            If you came here by mistake, you can <a href="{{ path('app_main_page') }}">return to the homepage</a>.
+        </p>
+        <br>
+        <img src="https://http.cat/{{ status_code }}" />
+    </div>
+{% endblock %}

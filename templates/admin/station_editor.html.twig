@@ -52,8 +52,18 @@
                     </div>
                     <br>
                     <div style="display: flex; ">
-                        <label for="nameInp" style="display: inline-block; width: 40%">Plus Code: </label>
+                        <label for="plusCodeInp" style="display: inline-block; width: 40%">Plus Code: </label>
                         {{ form_widget(editForm.plusCode, {'attr': {'id': 'plusCodeInp', 'style': 'width: 100%'}}) }}
+                    </div>
+                    <br>
+                    <div style="display: flex; ">
+                        <label for="latInp" style="display: inline-block; width: 40%">Latitude: </label>
+                        {{ form_widget(editForm.lat, {'type': 'number', 'attr': {'id': 'lonInp', 'style': 'width: 100%'}}) }}
+                    </div>
+                    <br>
+                    <div style="display: flex; ">
+                        <label for="lonInp" style="display: inline-block; width: 40%">Longitude: </label>
+                        {{ form_widget(editForm.lon, {'type': 'number', 'attr': {'id': 'lonInp', 'style': 'width: 100%'}}) }}
                     </div>
                     <br><br>
                     <div id="controls">

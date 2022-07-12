@@ -38,7 +38,11 @@
         <label for="nameInp">Name: </label><br>
         {{ form_widget(createForm.name, {'attr': {'id': 'nameInp', 'style': 'margin-bottom: 1rem; width: 100%'}}) }}
         <label for="plusCodeInp">Address (Plus Code): </label><br>
-        {{ form_widget(createForm.plusCode, {'attr': {'id': 'plusCodeInp', 'style': 'width: 100%'}}) }}
+        {{ form_widget(createForm.plusCode, {'attr': {'id': 'plusCodeInp', 'style': 'margin-bottom: 1rem; width: 100%'}}) }}
+        <label for="latInp">Latitude: </label><br>
+        {{ form_widget(createForm.lat, {'type': 'number', 'attr': {'id': 'latInp', 'style': 'margin-bottom: 1rem; width: 100%'}}) }}
+        <label for="lonInp">Longitude: </label><br>
+        {{ form_widget(createForm.lon, {'type': 'number', 'attr': {'id': 'lonInp', 'style': 'width: 100%'}}) }}
         <br><br>
         <div id="controls">
             <input id="submitBtn" type="submit" value="Create station" style="font-size: 1em; width: 100%; height: 2em; margin-bottom: 0.5rem" />

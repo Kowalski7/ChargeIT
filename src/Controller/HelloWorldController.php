@@ -13,11 +13,8 @@ class HelloWorldController extends AbstractController
 {
     #[Route("/hello", "hello")]
     public function hello_world(ManagerRegistry $doctrine): Response {
-        $car = $doctrine->getRepository(Cars::class)->findOneBy(['licensePlate' => 'AR 77 RAJ']);
-        $users = $car->getUsers();
-        dd($car);
         return $this->render('HelloWorld.html.twig', [
-            'car' => $users[0]->getName()
+            // variables here
         ]);
     }
 }
