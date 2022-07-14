@@ -14,13 +14,13 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
             <script type="text/javascript" src="/assets/js/jquery-3.3.1.min.js"></script>
-            <script type="text/javascript" src="/assets/js/jquery-ui-1.13.1.min.js"></script>
             <script type="text/javascript" src="/assets/js/bootstrap.bundle.js"></script>
+            <script type="text/javascript" src="/assets/js/jquery-ui-1.13.1.min.js"></script>
         {% endblock %}
     </head>
     <body>
         {% block body %}
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light" style="z-index: 1020">
                 <a class="navbar-brand" href="/">ChargeIT</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -29,26 +29,26 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item {{ app.request.attributes.get('_route') == 'app_main_page' ? 'active' }}">
-                            <a class="nav-link" href="{{ path('app_main_page') }}">Home</a>
+                            <a class="nav-link bi bi-house-fill" href="{{ path('app_main_page') }}"> Home</a>
                         </li>
                         <li class="nav-item {{ app.request.attributes.get('_route') == 'app_cars' ? 'active' }}">
-                            <a class="nav-link" href="{{ path('app_cars') }}">My Cars</a>
+                            <a class="nav-link bi bi-car-front-fill" href="{{ path('app_cars') }}"> My Cars</a>
                         </li>
                         <li class="nav-item {{ app.request.attributes.get('_route') == 'app_bookings' ? 'active' }}">
-                            <a class="nav-link" href="{{ path('app_bookings') }}">My Bookings</a>
+                            <a class="nav-link bi bi-calendar2-week-fill" href="{{ path('app_bookings') }}"> My Bookings</a>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Admin Panel
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ path('admin_stations') }}">Manage stations</a>
-                                    <a class="dropdown-item" href="#">Manage bookings</a>
-    {#                              <div class="dropdown-divider"></div>#}
-    {#                              <a class="dropdown-item" href="#">Something else here</a>#}
-                                </div>
-                            </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle bi bi-shield-lock-fill" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                 Admin Panel
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ path('admin_stations') }}">Manage stations</a>
+                                <a class="dropdown-item" href="#">Manage bookings</a>
+{#                              <div class="dropdown-divider"></div>#}
+{#                              <a class="dropdown-item" href="#">Something else here</a>#}
+                            </div>
+                        </li>
                         {% endif %}
                     </ul>
                     {% if is_granted('ROLE_USER') %}

@@ -30,7 +30,7 @@
         }
 
         function checkCompatibility() {
-            if(plug.connector !== ownedCars[document.getElementById("booking_form_car").value])
+            if(plug.connector.toLowerCase() !== ownedCars[document.getElementById("booking_form_car").value].toLowerCase())
                 displayWarning("The selected car might be incompatible with this plug!", "darkorange");
             else
                 displayWarning();
@@ -39,7 +39,9 @@
         function loadPlugData() {
             $.get("/api/plug/" + document.getElementById("booking_form_plug").value, function(data, status) {
                 plug = data;
+                {% if not submit_error|default %}
                 checkCompatibility();
+                {% endif %}
             })
         }
 
@@ -92,7 +94,7 @@
         document.getElementById('modalForm').innerHTML = '<div style="text-align: center"><i class="bi bi-calendar-check" style="font-size: 5em"></i><h3 class="mt-4">Booking created!</h3><h4>You can now close this popup.</h4></div>';
         {% endif %}
         {% if submit_error|default %}
-        alert("{{ submit_error }}");
+        displayWarning("{{ submit_error }}", "red", true);
         {% endif %}
     </script>
 {% endblock %}

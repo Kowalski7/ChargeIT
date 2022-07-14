@@ -16,15 +16,16 @@ class BookingFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $currentDateTime = new DateTime('now');
+        $currentDateTime->setTime($currentDateTime->format("H"), $currentDateTime->format("i"), "00");
         $builder
             ->add('car', ChoiceType::class, [
                 'choices' => $options['ownedCars']
             ])
             ->add('start_time', DateTimeType::class, [
                 'widget' => 'single_text',
+                'data' => $currentDateTime,
                 'years' => [date('Y'), date('Y')+1],
                 'attr' => [
-                    'value' => $currentDateTime->format('Y-m-d\TH:i'),
                     'min' => $currentDateTime->format('Y-m-d\TH:i'),
                     'max' => (clone $currentDateTime)->add(new DateInterval('P1Y'))->format('Y-m-d\TH:i')
                 ]

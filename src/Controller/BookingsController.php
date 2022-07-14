@@ -71,11 +71,11 @@ class BookingsController extends AbstractController
             elseif(! $plug->getStatus())
                 $error = "The specified plug is unavailable!";
             elseif((! $car) || (! $car->getUsers()->contains($this->getUser())))
-                $error = "The chosen car was not added into the 'My Cars' list!\nIf you would like to use this car, please add it to your account first.";
+                $error = "The chosen car was not added into the 'My Cars' list!";
             elseif($form->get('start_time')->getData() < $currentTimeDate)
-                $error = "The start time and date cannot be older than the current time and date!";
+                $error = "Start time is older than current date and time!";
             elseif($form->get('duration')->getData() < 1 || $form->get('duration')->getData() > 10080)
-                $error = "The booking duration must be at least 1 minute and at most 1 week!";
+                $error = "The duration must be between 1 minute and 1 week!";
             else {
                 $booking->setCar($car);
                 $booking->setPlug($plug);
@@ -85,7 +85,19 @@ class BookingsController extends AbstractController
                 $booking->setEndTime(clone $booking->getStartTime())->getEndTime()->add(new DateInterval('PT' . $booking->getDuration() . 'M'));
             }
 
-
+            // checking if booking is overlapping with another existing one
+            $bookingsForPlug = $doctrine->getRepository(Bookings::class)->findBy(['plug' => $plug]);
+            foreach ($bookingsForPlug as $book) {
+//                if($book->getStartTime()->format("Y-m-d") === $booking->getStartTime()->format("Y-m-d")) {
+                if ($booking->getStartTime() <= $book->getStartTime() && $booking->getEndTime() > $book->getStartTime()) {
+                    $error = "Booking is overlapping with another that starts at " . $book->getStartTime()->format("H:i");
+                    break;
+                }
+                if ($booking->getStartTime() < $book->getEndTime() && $booking->getEndTime() >= $book->getEndTime()) {
+                    $error = "Booking is overlapping with another that ends at " . $book->getEndTime()->format("H:i");
+                    break;
+                }
+            }
 
             if(! $error) {
                 $doctrine->getManager()->persist($booking);
@@ -100,7 +112,6 @@ class BookingsController extends AbstractController
             'close_window' => $close_window,
             'owned_cars' => $ownedCars,
             'createForm' => $form->createView()
-
         ]);
     }
 
